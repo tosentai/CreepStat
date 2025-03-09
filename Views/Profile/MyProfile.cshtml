@@ -1,0 +1,109 @@
+@model PlayerProfile
+
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<div class="container mx-auto mt-4 text-white p-5">
+    <div class="max-w-5xl mx-auto flex justify-between items-start">
+
+        <div class="flex items-center space-x-4">
+            <img src="@Model.profile.avatarfull" class="rounded-full w-32 h-32" alt="Avatar" />
+            <div>
+                <h3 class="text-2xl font-bold">@Model.profile.personaname</h3>
+
+                 @if (!string.IsNullOrEmpty(Model.profile.loccountrycode))
+                {
+                    <p class="text-gray-400 flex items-center">
+                        <img src="https://flagcdn.com/@(Model.profile.loccountrycode.ToLower()).svg" class="w-6 h-4 mr-2" alt="@Model.profile.loccountrycode" />
+                        @Model.profile.loccountrycode
+                    </p>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.profile.last_login))
+                {
+                    <p class="text-gray-400 text-sm">
+                        Last login: @DateTime.Parse(Model.profile.last_login).ToString("yyyy-MM-dd")
+                    </p>
+                }
+
+                <a href="@Model.profile.profileurl" target="_blank" class="mt-2 inline-flex items-center px-4 py-2 border border-gray-600 rounded-md text-sm font-medium text-white hover:bg-gray-700">
+                    <i class="bi bi-steam"></i>
+                    <span>Steam Profile</span>
+                </a>
+            </div>
+        </div>
+
+         <div class="bg-gray-800 border border-gray-700 rounded-lg w-72">
+            <div class="p-4 border-b border-gray-700">
+                <h4 class="text-lg font-semibold text-center">Rank Information</h4>
+            </div>
+            <div class="p-4">
+                @if (Model.rank_tier.HasValue)
+                {
+                    <div class="text-center">
+                        <h5 class="text-gray-400">Medal</h5>
+                        @{
+                            var medalTier = Model.rank_tier.Value / 10;
+                            var stars = Model.rank_tier.Value % 10;
+                            var rankImage = GetRankImage(medalTier, stars);
+                        }
+                        <img src="/images/@rankImage" alt="Rank" class="w-24 h-24 mx-auto" />
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-8 bg-gray-800 border border-gray-700 rounded-lg">
+        <div class="p-4 border-b border-gray-700">
+            <h4 class="text-lg font-semibold">Account Information</h4>
+        </div>
+        <div class="p-4">
+            <p><strong>Account ID:</strong> @Model.profile.account_id</p>
+
+            @if (Model.profile.cheese > 0)
+            {
+                <p><strong>Cheese:</strong> @Model.profile.cheese</p>
+            }
+
+            <p>
+                <strong>Dota Plus:</strong> @(Model.profile.plus ? "Yes" : "No")
+            </p>
+        </div>
+    </div>
+</div>
+
+@functions {
+    string GetRankImage(int tier, int stars)
+    {
+        string rankName = tier switch
+        {
+            1 => "herald",
+            2 => "guardian",
+            3 => "crusader",
+            4 => "archon",
+            5 => "legend",
+            6 => "ancient",
+            7 => "divine",
+            8 => "immortal",
+            _ => "uncalibrated"
+        };
+
+        if (rankName == "immortal")
+        {
+            return stars switch
+            {
+                1 => "immortal_1.webp",
+                10 => "immortal_10.webp",
+                100 => "immortal_100.webp",
+                1000 => "immortal_1000.webp",
+                _ => "immortal.webp"
+            };
+        }
+        else
+        {
+            return $"{rankName}_{stars}.webp";
+        }
+    }
+}

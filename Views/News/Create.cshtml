@@ -1,0 +1,28 @@
+﻿@model CreepStat.Models.News
+
+@{
+    ViewData["Title"] = "Add news";
+}
+
+<div class="max-w-5xl mx-auto mt-10 p-5 bg-[#1E1E1E] shadow-lg rounded-lg">
+    <h1 class="text-3xl font-bold text-center text-white mb-6">Add news</h1>
+
+    <form asp-action="Create" method="post" class="bg-[#2C2C2C] shadow-md rounded-lg p-6 border border-[#333333]">
+        <div>
+            <label asp-for="Title" class="block text-white">Title</label>
+            <input asp-for="Title" class="border border-[#333333] rounded w-full p-2 bg-[#1E1E1E] text-white mt-2 focus:outline-none focus:border-[#64C8FA]">
+            <span asp-validation-for="Title" class="text-red-400 text-sm mt-1"></span>
+        </div>
+
+        <div class="mt-4">
+            <label asp-for="Content" class="block text-white">Text (supports Markdown)</label>
+            <textarea asp-for="Content" class="border border-[#333333] rounded w-full p-2 bg-[#1E1E1E] text-white mt-2 focus:outline-none focus:border-[#64C8FA]" rows="10"></textarea>
+            <span asp-validation-for="Content" class="text-[#FF5252] text-sm mt-1"></span>
+        </div>
+
+        <div class="mt-6 flex space-x-4">
+            <button type="submit" class="bg-transparent text-white px-4 py-2 rounded border text-base hover:bg-[#64C8FA] transition duration-300">Save</button>
+            <a asp-action="Index" class="bg-transparent text-white px-4 py-2 rounded border text-base hover:bg-[#64C8FA] transition duration-300">Back</a>
+        </div>
+    </form>
+</div>

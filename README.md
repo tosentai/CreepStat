@@ -70,12 +70,20 @@
 
 <h2 id="docs" align="center" style="color: #2B6CB0;">📚 Documentation</h2>
 
-<ul align="center">
-   <li><a href="https://v3.tailwindcss.com/docs/installation">🎫 TailwindCSS Docs</a></li>
-   <li><a href="https://www.chartjs.org/docs/latest/">📊 Chart.js Docs</a></li>
-   <li><a href="https://docs.opendota.com">📄 OpenDota API Docs</a></li>
-   <li><a href="https://steamcommunity.com/dev">📑 Steam Web API Docs</a></li>
-</ul>
+<div align="center">
+   <a href="https://v3.tailwindcss.com/docs/installation">
+      <img src="https://img.shields.io/badge/TailwindCSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white">
+   </a>
+   <a href="https://www.chartjs.org/docs/latest/">
+      <img src="https://img.shields.io/badge/Chart.js-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white">
+   </a>
+   <a href="https://docs.opendota.com">
+      <img src="https://img.shields.io/badge/OpenDota%20API-EE0000?style=for-the-badge&logo=dota&logoColor=white">
+   </a>
+   <a href="https://steamcommunity.com/dev">
+      <img src="https://img.shields.io/badge/Steam%20Web%20API-000000?style=for-the-badge&logo=steam&logoColor=white">
+   </a>
+</div>
 
 ---
 

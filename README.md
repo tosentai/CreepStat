@@ -15,10 +15,10 @@
 <h2 id="layout" align="center" style="color: #2B6CB0;">🎨 Layout</h2>
 
 <p align="center">
-   <img src="https://i.imgur.com/EXItIcV.png" alt="Hero Section" width="400px" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); transition: transform 0.3s ease-in-out;">
-   <img src="https://i.imgur.com/8dHEnfv.png" alt="News Page" width="400px" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); transition: transform 0.3s ease-in-out;">
-   <img src="https://i.imgur.com/EItkOuo.png" alt="Teams Page" width="400px" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); transition: transform 0.3s ease-in-out;">
-   <img src="https://i.imgur.com/SvxyeyG.png" alt="Rank Distribution Page" width="400px" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); transition: transform 0.3s ease-in-out;">
+   <img src="https://i.imgur.com/EXItIcV.png" alt="Hero Section" width="400px" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);">
+   <img src="https://i.imgur.com/8dHEnfv.png" alt="News Page" width="400px" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);">
+   <img src="https://i.imgur.com/EItkOuo.png" alt="Teams Page" width="400px" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);">
+   <img src="https://i.imgur.com/SvxyeyG.png" alt="Rank Distribution Page" width="400px" style="border-radius: 15px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);">
 </p>
 
 ---

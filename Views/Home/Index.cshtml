@@ -1,0 +1,25 @@
+﻿@using System.Security.Claims
+@{
+    ViewData["Title"] = "Home Page";
+    var identity = User.Identity as ClaimsIdentity;
+    var name = identity?.FindFirst(ClaimTypes.Name)?.Value;
+}
+
+<div class="relative min-h-screen w-[100vw] max-w-[100%]">
+    <div class="overflow-hidden">
+        <img src="~/images/home-background.png" alt="CreepStat.gg" class="mt-[-90px] absolute inset-x-0 w-full h-auto object-cover" />
+    </div>
+
+    <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+        <h1 class="text-8xl font-bold text-white font-rubik mb-25 text-shadow-outline">CreepStat.gg</h1>
+
+        <div class="mt-44">
+            <img src="~/images/loading.gif" alt="Loading..." class="mx-auto pt-10" />
+        </div>
+
+        <div class="flex justify-center items-center mt-5">
+            <p class="text-2xl text-white">Sponsored by</p>
+            <img src="~/images/openai-logo.png" alt="OpenAI" class="w-[128px] h-[32px] ml-2" />
+        </div>
+    </div>
+</div>

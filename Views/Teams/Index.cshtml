@@ -1,0 +1,70 @@
+﻿@model List<Team>
+
+@{
+    ViewData["Title"] = "Top 50 teams";
+}
+<div class="custom-bg bg-cover bg-center">
+    <div class="max-w-5xl mx-auto mt-0 p-5 shadow-lg rounded-lg";">
+        <h2 class="text-3xl font-bold text-center text-white mb-6 text-shadow-outline">Top 50 Dota 2 Teams</h2>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-[#2C2C2C] border border-[#333333] rounded-lg shadow-md">
+                <thead>
+                    <tr class="bg-[#1E1E1E] text-white">
+                        <th class="px-6 py-3 text-left text-sm font-semibold">Logo</th>
+                        <th class="px-6 py-3 text-left text-sm font-semibold">Name</th>
+                        <th class="px-6 py-3 text-left text-sm font-semibold">Rating</th>
+                        <th class="px-6 py-3 text-left text-sm font-semibold">Wins</th>
+                        <th class="px-6 py-3 text-left text-sm font-semibold">Losses</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-[#333333]">
+                    @foreach (var team in Model)
+                    {
+                        <tr>
+                            <td class="px-6 py-4">
+                                <div>
+                                    @if (!string.IsNullOrEmpty(team.LogoUrl))
+                                    {
+                                        <img src="@team.LogoUrl" alt="@team.Name Logo" class="w-12 h-10 object-cover shadow-sm" onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\'text-[#64C8FA] font-medium\'>@team.Name[0]</span>'" />
+                                    }
+                                    else
+                                    {
+                                        <span class="text-[#64C8FA] font-medium">@team.Name[0]</span>
+                                    }
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="font-medium text-white">@team.Name</div>
+                                <small class="text-[#B0B0B0] text-sm">
+                                    @if (team.LastMatchTime > 0)
+                                    {
+                                        var lastMatchTime = DateTimeOffset.FromUnixTimeSeconds(team.LastMatchTime);
+                                        var currentTime = DateTimeOffset.UtcNow;
+                                        var timeDifference = currentTime - lastMatchTime;
+                                        var hoursAgo = (int)timeDifference.TotalHours;
+
+                                        @:Last played: @hoursAgo hours ago
+                                    }
+                                    else
+                                    {
+                                        @:Last played: Unknown
+                                    }
+                                </small>
+                            </td>
+                            <td class="px-6 py-4 text-white">@team.Rating</td>
+                            <td class="px-6 py-4 text-[#4CAF50] font-semibold">@team.Wins</td>
+                            <td class="px-6 py-4 text-[#FF5252] font-semibold">@team.Losses</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .custom-bg {
+        background-image: url('/images/b2.jpg');
+    }
+</style>

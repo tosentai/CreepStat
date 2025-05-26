@@ -1,0 +1,177 @@
+﻿@model List<Stream>
+@{
+    var availableLanguages = ViewBag.Languages as List<string>;
+    var selectedLanguage = ViewBag.SelectedLanguage as string;
+    var favoritesOnly = ViewBag.FavoritesOnly as bool? ?? false;
+    var favoriteStatuses = ViewBag.FavoriteStatuses as Dictionary<string, bool>;
+}
+
+<div class="container mx-auto p-6 text-white">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-bold">🎮 Active Dota 2 streams</h2>
+
+        @if (User.Identity.IsAuthenticated)
+        {
+            <div class="flex space-x-4">
+                @if (!favoritesOnly)
+                {
+                    <a href="@Url.Action("Index", new { language = selectedLanguage, favoritesOnly = true })" 
+                       class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg font-medium transition flex items-center gap-2">
+                        <span>⭐</span>
+                        <span>Show Only Favorites</span>
+                    </a>
+                }
+                else
+                {
+                    <a href="@Url.Action("Index", new { language = selectedLanguage, favoritesOnly = false })" 
+                       class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg font-medium transition flex items-center gap-2">
+                        <span>📺</span>
+                        <span>Show All Streams</span>
+                    </a>
+                }
+    
+                <a href="/Streams/Favorites" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg font-medium transition flex items-center gap-2">
+                    <span>📋</span>
+                    <span>Favorites Page</span>
+                </a>
+            </div>
+        }
+    </div>
+
+    <form method="get" asp-action="Index" class="mb-6">
+        <input type="hidden" name="favoritesOnly" value="@favoritesOnly" />
+        <label for="language" class="block mb-2 text-sm font-medium text-gray-300">Filter by language:</label>
+        <select id="language" name="language" onchange="this.form.submit()" class="bg-gray-700 text-white p-2 rounded">
+            <option value="">All languages</option>
+            @foreach (var lang in availableLanguages)
+            {
+                <option value="@lang" selected="@(lang == selectedLanguage)">
+                    @lang.ToUpper()
+                </option>
+            }
+        </select>
+    </form>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-4">
+        @foreach (var stream in Model)
+        {
+            <div class="bg-gray-800 rounded-xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
+                <div class="relative">
+                    <img src="@stream.ThumbnailUrl.Replace("{width}", "320").Replace("{height}", "180")"
+                         alt="Stream Thumbnail"
+                         class="w-full h-48 object-cover group-hover:brightness-110 transition duration-300" />
+                    <div class="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded flex items-center">
+                        <span class="w-2 h-2 bg-white rounded-full mr-1 animate-pulse"></span>
+                        LIVE
+                    </div>
+                    <div class="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white text-sm px-2 py-1 rounded">
+                        @stream.ViewerCount viewers
+                    </div>
+
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        var isFavorite = favoriteStatuses?.GetValueOrDefault(stream.StreamerId, false) ?? false;
+                        <button onclick="toggleFavorite('@stream.StreamerId', this)"
+                                class="absolute top-2 right-2 favorite-btn transition-all duration-200 hover:scale-110"
+                                data-streamer-id="@stream.StreamerId"
+                                data-is-favorite="@isFavorite.ToString().ToLower()">
+                            <span class="text-2xl @(isFavorite ? "text-yellow-400" : "text-gray-400 hover:text-yellow-400")">
+                                @(isFavorite ? "⭐" : "☆")
+                            </span>
+                        </button>
+                    }
+                </div>
+
+                <div class="p-4">
+                    <h3 class="text-white font-bold text-lg mb-2 truncate hover:text-blue-400 transition">
+                        @stream.Title
+                    </h3>
+
+                    <div class="flex items-center mb-3">
+                        <div>
+                            <p class="text-sm font-medium text-white">@stream.StreamerName</p>
+                            <p class="text-xs text-gray-400">Streaming now</p>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="px-2 py-1 bg-gray-700 rounded-full text-gray-300">
+                            @stream.Language?.ToUpper()
+                        </span>
+                        <a href="/Streams/Streamer/@stream.StreamerId" class="text-blue-400 hover:text-blue-300 font-medium text-2xl flex items-center">
+                            Watch
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    async function toggleFavorite(streamerId, button) {
+        try {
+            const response = await fetch('/Streams/ToggleFavorite', {
+                method: 'POST',
+                headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                },
+                body: `streamerId=${encodeURIComponent(streamerId)}`
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                const star = button.querySelector('span');
+                if (result.isFavorite) {
+                    star.textContent = '⭐';
+                    star.className = 'text-2xl text-yellow-400';
+                } else {
+                    star.textContent = '☆';
+        star.className = 'text-2xl text-gray-400 hover:text-yellow-400';
+                }
+                button.setAttribute('data-is-favorite', result.isFavorite);
+
+                showNotification(result.message);
+
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('favoritesOnly') === 'True' && !result.isFavorite) {
+                    setTimeout(() => {
+            location.reload();
+                    }, 1000);
+                }
+            }
+        } catch (error) {
+            console.error('Error toggling favorite:', error);
+            showNotification('Error updating favorites', 'error');
+        }
+    }
+
+    function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = `fixed bottom-4 right-4 px-6 py-3 rounded-xl shadow-lg z-[9999] transition-all duration-300 transform hover:scale-105 ${
+            type === 'success' ? 'bg-gray-700 border border-green-500' : 'bg-red-700 border border-red-500'
+        } flex items-center gap-3 animate-fade-in`;
+        
+        const icon = document.createElement('span');
+        icon.className = 'text-xl';
+        icon.textContent = type === 'success' ? '✓' : '⚠️';
+        
+        const text = document.createElement('span');
+        text.className = 'text-white font-medium';
+        text.textContent = message;
+        
+        notification.appendChild(icon);
+        notification.appendChild(text);
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.classList.add('animate-fade-out');
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        }, 3000);
+    }
+</script>

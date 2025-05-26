@@ -1,0 +1,68 @@
+﻿@model CreepStat.Models.News
+
+@{
+    ViewData["Title"] = "Edit news";
+}
+
+<div class="max-w-5xl mx-auto mt-10 p-5 bg-[#1E1E1E] shadow-lg rounded-lg">
+    <h1 class="text-3xl font-bold text-center text-white mb-6">Edit news</h1>
+
+    <form asp-action="Edit" method="post" class="bg-[#2C2C2C] shadow-md rounded-lg p-6 border border-[#333333]">
+        <input type="hidden" asp-for="Id" />
+
+        <div>
+            <label asp-for="Title" class="block text-white">Title</label>
+            <input asp-for="Title" class="border border-[#333333] rounded w-full p-2 bg-[#1E1E1E] text-white mt-2 focus:outline-none focus:border-[#64C8FA]">
+            <span asp-validation-for="Title" class="text-[#FF5252] text-sm mt-1"></span>
+        </div>
+
+        <div class="mt-4">
+            <label asp-for="Content" class="block text-white">Text (supports Markdown)</label>
+            <textarea asp-for="Content" class="border border-[#333333] rounded w-full p-2 bg-[#1E1E1E] text-white mt-2 h-40 focus:outline-none focus:border-[#64C8FA]"></textarea>
+            <span asp-validation-for="Content" class="text-[#FF5252] text-sm mt-1"></span>
+        </div>
+
+        <div class="mt-4">
+            <button type="button" onclick="toggleEmojiMenu()" class="bg-transparent text-white px-4 py-2 rounded border text-base hover:bg-[#64C8FA] transition duration-300 mt-2">Open Emoji Menu</button>
+            <div id="emojiMenu" class="flex space-x-2 mt-4 hidden">
+                <button type="button" onclick="addEmoji('😊')" class="text-white">😊</button>
+                <button type="button" onclick="addEmoji('👍')" class="text-white">👍</button>
+                <button type="button" onclick="addEmoji('🎉')" class="text-white">🎉</button>
+                <button type="button" onclick="addEmoji('🚀')" class="text-white">🚀</button>
+                <button type="button" onclick="addEmoji('🏆')" class="text-white">🏆</button>
+                <button type="button" onclick="addEmoji('⚔️')" class="text-white">⚔️</button>
+                <button type="button" onclick="addEmoji('🔥')" class="text-white">🔥</button>
+                <button type="button" onclick="addEmoji('💀')" class="text-white">💀</button>
+                <button type="button" onclick="addEmoji('🎯')" class="text-white">🎯</button>
+                <button type="button" onclick="addEmoji('🛡️')" class="text-white">🛡️</button>
+                <button type="button" onclick="addEmoji('🌀')" class="text-white">🌀</button>
+                <button type="button" onclick="addEmoji('💰')" class="text-white">💰</button>
+                <button type="button" onclick="addEmoji('🌟')" class="text-white">🌟</button>
+                <button type="button" onclick="addEmoji('🏹')" class="text-white">🏹</button>
+                <button type="button" onclick="addEmoji('⚡')" class="text-white">⚡</button>
+                <button type="button" onclick="addEmoji('🕹️')" class="text-white">🕹️</button>
+                <button type="button" onclick="addEmoji('🏅')" class="text-white">🏅</button>
+                <button type="button" onclick="addEmoji('🎙️')" class="text-white">🎙️</button>
+                <button type="button" onclick="addEmoji('🔄')" class="text-white">🔄</button>
+            </div>
+        </div>
+
+        <div class="mt-6 flex space-x-4">
+            <button type="submit" class="bg-transparent text-white px-4 py-2 rounded border text-base hover:bg-[#64C8FA] transition duration-300">Save</button>
+            <a asp-action="Index" class="bg-transparent text-white px-4 py-2 rounded border text-base hover:bg-[#64C8FA] transition duration-300">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    function addEmoji(emoji) {
+        const content = document.getElementById('Content'); 
+        content.value += emoji;
+        content.focus();
+    }
+
+    function toggleEmojiMenu() {
+        const emojiMenu = document.getElementById('emojiMenu');
+        emojiMenu.classList.toggle('hidden');
+    }
+</script>

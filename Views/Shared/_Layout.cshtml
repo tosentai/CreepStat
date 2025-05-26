@@ -1,0 +1,83 @@
+﻿@Html.AntiForgeryToken()
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CreepStat</title>
+    <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/CreepStat.styles.css" asp-append-version="true" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+</head>
+<body class="bg-[#1E1E1E] flex flex-col min-h-screen h-full font-rubik">
+    <div id="loadingOverlay" class="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-transparent bg-opacity-75 z-50 hidden">
+        <img src="~/images/loading.gif" alt="Loading..." class="w-64 h-64" />
+    </div>
+
+    <header class="w-full h-[40px] bg-[2C2C2C]/30 backdrop-saturate-180 backdrop-blur-lg sticky z-[1000] top-0">
+        <div class="w-[95%] max-w-[1920px] flex items-center h-full mx-auto my-0">
+
+            <div class="logo-container flex-shrink-0">
+                <a asp-area="" asp-controller="Home" asp-action="Index">
+                    <a class="text-2xl font-bold text-white hover:text-gray-400" asp-area="" asp-controller="Home" asp-action="Index">Creep/Stat</a>
+                </a>
+            </div>
+
+            <nav class="flex items-center gap-[25px] ml-6">
+                <a class="relative no-underline text-white text-base font-normal transition-[color] duration-[0.3s] ease-[ease] text-right px-0 py-[5px] after:absolute after:w-0 after:h-0.5 after:bg-white after:transition-[width] after:duration-[0.3s] after:ease-[ease-in-out] after:left-0 after:-bottom-[-3px] hover:after:w-full" asp-area="" asp-controller="News" asp-action="Index">News</a>
+                <span></span>
+                <a class="relative no-underline text-white text-base font-normal transition-[color] duration-[0.3s] ease-[ease] text-right px-0 py-[5px] after:absolute after:w-0 after:h-0.5 after:bg-white after:transition-[width] after:duration-[0.3s] after:ease-[ease-in-out] after:left-0 after:-bottom-[-3px] hover:after:w-full" asp-area="" asp-controller="Hero" asp-action="Index">Heroes</a>
+                <span></span>
+                <a class="relative no-underline text-white text-base font-normal transition-[color] duration-[0.3s] ease-[ease] text-right px-0 py-[5px] after:absolute after:w-0 after:h-0.5 after:bg-white after:transition-[width] after:duration-[0.3s] after:ease-[ease-in-out] after:left-0 after:-bottom-[-3px] hover:after:w-full" asp-area="" asp-controller="Teams" asp-action="Index">Teams</a>
+                <span></span>
+                <a class="relative no-underline text-white text-base font-normal transition-[color] duration-[0.3s] ease-[ease] text-right px-0 py-[5px] after:absolute after:w-0 after:h-0.5 after:bg-white after:transition-[width] after:duration-[0.3s] after:ease-[ease-in-out] after:left-0 after:-bottom-[-3px] hover:after:w-full" asp-area="" asp-controller="Distribution" asp-action="Index">Distributions</a>
+                <span></span>
+                <a class="relative no-underline text-white text-base font-normal transition-[color] duration-[0.3s] ease-[ease] text-right px-0 py-[5px] after:absolute after:w-0 after:h-0.5 after:bg-white after:transition-[width] after:duration-[0.3s] after:ease-[ease-in-out] after:left-0 after:-bottom-[-3px] hover:after:w-full" asp-area="" asp-controller="Streams" asp-action="Index">Streams</a>
+            </nav>
+
+
+            <div class="flex-shrink-0 ml-auto">
+                <partial name="_LoginPartial" />
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full" role="main">
+        @RenderBody()
+    </main>
+
+    <footer class="bg-[#252525] border-t border-[#252525] mt-auto">
+        <div class="container mx-auto px-6 py-4 text-center">
+            <span class="text-[#B0B0B0]">&copy; 2025 - CreepStat</span>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', function () {
+                    document.getElementById('loadingOverlay').classList.remove('hidden');
+                });
+            });
+
+            document.querySelectorAll('form').forEach(form => {
+                form.addEventListener('submit', function () {
+                    document.getElementById('loadingOverlay').classList.remove('hidden');
+                });
+            });
+
+            window.addEventListener('load', function () {
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            });
+        });
+    </script>
+
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

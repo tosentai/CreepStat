@@ -1,0 +1,473 @@
+@model PlayerProfile
+
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<div class="container mx-auto mt-4 text-white p-5">
+    <div class="max-w-5xl mx-auto flex justify-between items-start">
+        <div class="flex items-center space-x-4">
+            <img src="@Model.profile.avatarfull" class="rounded-full w-32 h-32" alt="Avatar" />
+            <div>
+                <h3 class="text-3xl">@Model.profile.personaname <a href="@Model.profile.profileurl" target="_blank"><ion-icon name="logo-steam" class="w-[24px] h-[24px] hover:text-gray-400"></ion-icon></a></h3>
+
+                <div class="grid grid-cols-3 rounded-lg p-2 relative -left-7">
+
+                    <div class="text-center">
+                        <p class="text-gray-400 text-sm">WINS</p>
+                        <p class="text-green-400 text-2xl">@Model.WinLoss.Win</p>
+                    </div>
+
+                    <div class="text-center">
+                        <p class="text-gray-400 text-sm">LOSSES</p>
+                        <p class="text-red-400 text-2xl">@Model.WinLoss.Lose</p>
+                    </div>
+
+                    <div class="text-center">
+                        <p class="text-gray-400 text-sm">WINRATE</p>
+                        <p class="text-white text-2xl">@Model.WinLoss.WinRate.ToString("F2")%</p>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.profile.loccountrycode))
+                {
+                    <p class="text-gray-400 flex items-center">
+                        <img src="https://flagcdn.com/@(Model.profile.loccountrycode.ToLower()).svg" class="w-6 h-4 mr-2" alt="@Model.profile.loccountrycode" />
+                        @Model.profile.loccountrycode
+                    </p>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.profile.last_login))
+                {
+                    <p class="text-gray-400 text-sm">
+                        Last login: @DateTime.Parse(Model.profile.last_login).ToString("yyyy-MM-dd")
+                    </p>
+                }
+            </div>
+        </div>
+
+        <div class="bg-gray-800 border border-gray-700 rounded-lg w-72">
+            <div class="p-4 border-b border-gray-700">
+                <h4 class="text-lg font-semibold text-center">Rank Information</h4>
+            </div>
+            <div class="p-4">
+                @if (Model.rank_tier.HasValue)
+                {
+                    <div class="text-center">
+                        <h5 class="text-gray-400">Medal</h5>
+                        @{
+                            var medalTier = Model.rank_tier.Value / 10;
+                            var stars = Model.rank_tier.Value % 10;
+                            var rankImage = GetRankImage(medalTier, stars);
+                        }
+                        <img src="/images/@rankImage" alt="Rank" class="w-24 h-24 mx-auto" />
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-8 bg-gray-800 border border-gray-700 rounded-lg">
+        <div class="p-4 border-b border-gray-700">
+            <h4 class="text-lg font-semibold">Account Information</h4>
+        </div>
+        <div class="p-4">
+            <p><strong>Account ID:</strong> @Model.profile.account_id</p>
+
+            @if (Model.profile.cheese > 0)
+            {
+                <p><strong>Cheese:</strong> @Model.profile.cheese</p>
+            }
+
+            <p>
+                <strong>Dota Plus:</strong> @(Model.profile.plus ? "Yes" : "No")
+            </p>
+        </div>
+    </div>
+
+    <div class="mt-8 bg-gray-800 border border-gray-700 rounded-lg">
+        <div class="p-4 border-b border-gray-700">
+            <h4 class="text-lg font-semibold">Averages/Maximums <span class="text-sm text-gray-500">in last 20 displayed matches</span></h4>
+        </div>
+
+        <div class="p-6">
+            <div class="grid grid-cols-5 gap-4">
+                <div class="bg-gray-800 p-4 rounded-2xl shadow-lg text-center group relative">
+                    <p class="text-gray-400 text-xs uppercase">Winrate</p>
+                    <p class="text-green-400 text-2xl font-bold">@((int)Model.Benchmarks.WinRate)%</p>
+                    <div class="absolute top-0 left-0 right-0 bg-gray-700 text-white text-xs p-2 rounded-t-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        Percentage of matches won
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 p-4 rounded-2xl shadow-lg text-center group relative">
+                    <p class="text-gray-400 text-xs uppercase">Kills</p>
+                    <p class="text-white text-2xl font-bold">@((int)Model.Benchmarks.AverageKills) / @Model.Benchmarks.MaxKills</p>
+                    <div class="absolute top-0 left-0 right-0 bg-gray-700 text-white text-xs p-2 rounded-t-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        Average / Max kills per match
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 p-4 rounded-2xl shadow-lg text-center group relative">
+                    <p class="text-gray-400 text-xs uppercase">Deaths</p>
+                    <p class="text-red-400 text-2xl font-bold">@((int)Model.Benchmarks.AverageDeaths) / @Model.Benchmarks.MaxDeaths</p>
+                    <div class="absolute top-0 left-0 right-0 bg-gray-700 text-white text-xs p-2 rounded-t-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        Average / Max deaths per match
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 p-4 rounded-2xl shadow-lg text-center group relative">
+                    <p class="text-gray-400 text-xs uppercase">Assists</p>
+                    <p class="text-blue-400 text-2xl font-bold">@((int)Model.Benchmarks.AverageAssists) / @Model.Benchmarks.MaxAssists</p>
+                    <div class="absolute top-0 left-0 right-0 bg-gray-700 text-white text-xs p-2 rounded-t-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        Average / Max assists per match
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 p-4 rounded-2xl shadow-lg text-center group relative">
+                    <p class="text-gray-400 text-xs uppercase">Duration</p>
+                    <p class="text-yellow-400 text-2xl font-bold">
+                        @TimeSpan.FromSeconds(Model.Benchmarks.AverageDuration).ToString(@"mm\:ss") /
+                        @TimeSpan.FromSeconds(Model.Benchmarks.MaxDuration).ToString(@"mm\:ss")
+                    </p>
+                    <div class="absolute top-0 left-0 right-0 bg-gray-700 text-white text-xs p-2 rounded-t-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        Average / Max match duration
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 bg-gray-800 border border-gray-700 rounded-lg">
+            <div class="p-4 border-b border-gray-700">
+                <h4 class="text-lg font-semibold">Recent Matches</h4>
+            </div>
+            <div class="p-4">
+                <table class="min-w-full">
+                    <thead>
+                        <tr>
+                            <th class="px-4 py-2 text-left">Hero</th>
+                            <th class="px-4 py-2 text-left">Result</th>
+                            <th class="px-4 py-2 text-left">Game Mode</th>
+                            <th class="px-4 py-2 text-left">Duration</th>
+                            <th class="px-4 py-2 text-left">K/D/A</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var match in Model.RecentMatches)
+                        {
+                            <tr class="hover:bg-gray-700 transition-all duration-200 ease-in-out transform hover:scale-105">
+                                <td class="py-2">
+                                    <div class="flex items-center space-x-2">
+                                        <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/@(GetHeroName(match.HeroId)).png" class="w-[51px] h-[29px]" alt="Hero" />
+                                        <span class="text-white">@FormatHeroNameForDisplay(GetHeroName(match.HeroId))</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-2">
+                                    <span class="@(match.Won ? "text-green-400" : "text-red-400")">
+                                        @(match.Won ? "Win" : "Loss")
+                                    </span>
+                                </td>
+                                <td class="px-4 py-2">@GetGameMode(match.GameMode)</td>
+                                <td class="px-4 py-2">@TimeSpan.FromSeconds(match.Duration).ToString(@"mm\:ss")</td>
+                                <td class="px-4 py-2">@match.Kills / @match.Deaths / @match.Assists</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="space-y-8">
+            <div class="bg-gray-800 border border-gray-700 rounded-lg">
+                <div class="p-4 border-b border-gray-700">
+                    <h4 class="text-lg font-semibold">Players Played With</h4>
+                </div>
+                <div class="p-4">
+                    <table class="min-w-full">
+                        <thead>
+                            <tr>
+                                <th class="px-4 py-2 text-left">Player</th>
+                                <th class="px-4 py-2 text-left">MP</th>
+                                <th class="px-4 py-2 text-left">Win %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var player in Model.PlayersPlayedWith)
+                            {
+                                <tr class="hover:bg-gray-700 transition-all duration-200 ease-in-out transform hover:scale-110">
+                                    <td class="px-4 py-2">
+                                        <div class="flex items-center space-x-2">
+                                            @if (!string.IsNullOrEmpty(player.Avatar))
+                                            {
+                                                <img src="@player.Avatar" alt="Avatar"
+                                                     class="rounded-full w-9 h-9 object-cover">
+                                            }
+                                            <span class="text-white">@player.PersonaName</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-2">@player.Games</td>
+                                    <td class="px-4 py-2">@player.WinRate.ToString("F2")%</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="bg-gray-800 border border-gray-700 rounded-lg">
+                <div class="p-4 border-b border-gray-700">
+                    <h4 class="text-lg font-semibold">Heroes Played</h4>
+                </div>
+                <div class="p-4">
+                    <table class="min-w-full">
+                        <thead>
+                            <tr>
+                                <th class="px-4 py-2 text-left">Hero</th>
+                                <th class="px-4 py-2 text-left">MP</th>
+                                <th class="px-4 py-2 text-left">Win %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var hero in Model.HeroesPlayed)
+                            {
+                                <tr class="hover:bg-gray-700 transition-all duration-200 ease-in-out transform hover:scale-110">
+                                    <td class="px-4 py-2">
+                                        <div class="flex items-center space-x-2">
+                                            <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/@(GetHeroName(hero.HeroId)).png" class="w-[51px] h-[29px]" alt="Hero" />
+                                            <span class="text-white">@FormatHeroNameForDisplay(GetHeroName(hero.HeroId))</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-2">@hero.Games</td>
+                                    <td class="px-4 py-2">@hero.WinRate.ToString("F2")%</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@functions {
+    string GetRankImage(int tier, int stars)
+    {
+        string rankName = tier switch
+        {
+            1 => "herald",
+            2 => "guardian",
+            3 => "crusader",
+            4 => "archon",
+            5 => "legend",
+            6 => "ancient",
+            7 => "divine",
+            8 => "immortal",
+            _ => "uncalibrated"
+        };
+
+        if (rankName == "immortal")
+        {
+            return stars switch
+            {
+                1 => "immortal_1.webp",
+                10 => "immortal_10.webp",
+                100 => "immortal_100.webp",
+                1000 => "immortal_1000.webp",
+                _ => "immortal.webp"
+            };
+        }
+        else
+        {
+            return $"{rankName}_{stars}.webp";
+        }
+    }
+
+    string GetHeroName(int heroId)
+    {
+        var heroNames = new Dictionary<int, string>
+        {
+            { 1, "antimage" },
+            { 2, "axe" },
+            { 3, "bane" },
+            { 4, "bloodseeker" },
+            { 5, "crystal_maiden" },
+            { 6, "drow_ranger" },
+            { 7, "earthshaker" },
+            { 8, "juggernaut" },
+            { 9, "mirana" },
+            { 10, "morphling" },
+            { 11, "nevermore" },
+            { 12, "phantom_lancer" },
+            { 13, "puck" },
+            { 14, "pudge" },
+            { 15, "razor" },
+            { 16, "sand_king" },
+            { 17, "storm_spirit" },
+            { 18, "sven" },
+            { 19, "tiny" },
+            { 20, "vengefulspirit" },
+            { 21, "windrunner" },
+            { 22, "zuus" },
+            { 23, "kunkka" },
+            { 25, "lina" },
+            { 26, "lion" },
+            { 27, "shadow_shaman" },
+            { 28, "slardar" },
+            { 29, "tidehunter" },
+            { 30, "witch_doctor" },
+            { 31, "lich" },
+            { 32, "riki" },
+            { 33, "enigma" },
+            { 34, "tinker" },
+            { 35, "sniper" },
+            { 36, "necrolyte" },
+            { 37, "warlock" },
+            { 38, "beastmaster" },
+            { 39, "queenofpain" },
+            { 40, "venomancer" },
+            { 41, "faceless_void" },
+            { 42, "skeleton_king" },
+            { 43, "death_prophet" },
+            { 44, "phantom_assassin" },
+            { 45, "pugna" },
+            { 46, "templar_assassin" },
+            { 47, "viper" },
+            { 48, "luna" },
+            { 49, "dragon_knight" },
+            { 50, "dazzle" },
+            { 51, "rattletrap" },
+            { 52, "leshrac" },
+            { 53, "furion" },
+            { 54, "life_stealer" },
+            { 55, "dark_seer" },
+            { 56, "clinkz" },
+            { 57, "omniknight" },
+            { 58, "enchantress" },
+            { 59, "huskar" },
+            { 60, "night_stalker" },
+            { 61, "broodmother" },
+            { 62, "bounty_hunter" },
+            { 63, "weaver" },
+            { 64, "jakiro" },
+            { 65, "batrider" },
+            { 66, "chen" },
+            { 67, "spectre" },
+            { 68, "ancient_apparition" },
+            { 69, "doom_bringer" },
+            { 70, "ursa" },
+            { 71, "spirit_breaker" },
+            { 72, "gyrocopter" },
+            { 73, "alchemist" },
+            { 74, "invoker" },
+            { 75, "silencer" },
+            { 76, "obsidian_destroyer" },
+            { 77, "lycan" },
+            { 78, "brewmaster" },
+            { 79, "shadow_demon" },
+            { 80, "lone_druid" },
+            { 81, "chaos_knight" },
+            { 82, "meepo" },
+            { 83, "treant" },
+            { 84, "ogre_magi" },
+            { 85, "undying" },
+            { 86, "rubick" },
+            { 87, "disruptor" },
+            { 88, "nyx_assassin" },
+            { 89, "naga_siren" },
+            { 90, "keeper_of_the_light" },
+            { 91, "wisp" },
+            { 92, "visage" },
+            { 93, "slark" },
+            { 94, "medusa" },
+            { 95, "troll_warlord" },
+            { 96, "centaur" },
+            { 97, "magnataur" },
+            { 98, "shredder" },
+            { 99, "bristleback" },
+            { 100, "tusk" },
+            { 101, "skywrath_mage" },
+            { 102, "abaddon" },
+            { 103, "elder_titan" },
+            { 104, "legion_commander" },
+            { 105, "techies" },
+            { 106, "ember_spirit" },
+            { 107, "earth_spirit" },
+            { 108, "abyssal_underlord" },
+            { 109, "terrorblade" },
+            { 110, "phoenix" },
+            { 111, "oracle" },
+            { 112, "winter_wyvern" },
+            { 113, "arc_warden" },
+            { 114, "monkey_king" },
+            { 119, "dark_willow" },
+            { 120, "pangolier" },
+            { 121, "grimstroke" },
+            { 123, "hoodwink" },
+            { 126, "void_spirit" },
+            { 128, "snapfire" },
+            { 129, "mars" },
+            { 135, "dawnbreaker" },
+            { 136, "marci" },
+            { 137, "primal_beast" },
+            { 138, "muerta" }
+        };
+        return heroNames.ContainsKey(heroId) ? heroNames[heroId] : "unknown";
+    }
+
+    string GetGameMode(int gameMode)
+    {
+        var gameModes = new Dictionary<int, string>
+        {
+            { 0, "Unknown" },
+            { 1, "All Pick" },
+            { 2, "Captains Mode" },
+            { 3, "Random Draft" },
+            { 4, "Single Draft" },
+            { 5, "All Random" },
+            { 6, "Intro" },
+            { 7, "Diretide" },
+            { 8, "Reverse Captains Mode" },
+            { 9, "Greeviling" },
+            { 10, "Tutorial" },
+            { 11, "Mid Only" },
+            { 12, "Least Played" },
+            { 13, "Limited Heroes" },
+            { 14, "Compendium Matchmaking" },
+            { 15, "Custom" },
+            { 16, "Captains Draft" },
+            { 17, "Balanced Draft" },
+            { 18, "Ability Draft" },
+            { 19, "Event" },
+            { 20, "All Random Death Match" },
+            { 21, "1v1 Mid" },
+            { 22, "Ranked All Pick" },
+            { 23, "Turbo" },
+            { 24, "Mutation" },
+            { 25, "Coaches Challenge" }
+        };
+        return gameModes.ContainsKey(gameMode) ? gameModes[gameMode] : "Unknown";
+    }
+
+    string FormatHeroNameForDisplay(string heroName)
+    {
+        if (string.IsNullOrEmpty(heroName))
+            return heroName;
+
+        heroName = heroName.Replace("_", " ");
+
+        return System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(heroName);
+    }
+}
+
+<style>
+    table {
+        color: white !important;
+    }
+
+    table th, table td {
+        color: inherit !important;
+    }
+</style>

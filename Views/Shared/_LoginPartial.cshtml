@@ -1,0 +1,36 @@
+﻿@using System.Security.Claims
+@{
+    var identity = User.Identity as ClaimsIdentity;
+    var name = identity?.FindFirst(ClaimTypes.Name)?.Value;
+    var avatar = identity?.FindFirst("Avatar")?.Value;
+
+    var random = new Random();
+    var borderColor = $"rgb({random.Next(0, 256)}, {random.Next(0, 256)}, {random.Next(0, 256)})";
+}
+
+<ul class="flex items-center space-x-6">
+    @if (User.Identity.IsAuthenticated)
+    {
+        <li class="flex items-center space-x-4">
+            @if (!string.IsNullOrEmpty(avatar))
+            {
+                <a asp-controller="Profile" asp-action="MyProfile">
+                    <img src="@avatar" alt="Avatar"
+                         class="rounded-full w-9 h-9 object-cover"
+                         style="border: 3px solid @borderColor; padding: 3px;">
+                </a>
+            }
+            <a asp-controller="Profile" asp-action="MyProfile" class="relative no-underline text-white text-base font-normal transition-[color] duration-[0.3s] ease-[ease] text-right px-0 py-[5px] after:absolute after:w-0 after:h-0.5 after:bg-white after:transition-[width] after:duration-[0.3s] after:ease-[ease-in-out] after:left-0 after:-bottom-[-3px] hover:after:w-full">@name</a>
+            <a class="relative no-underline text-white text-base font-normal transition-[color] duration-[0.3s] ease-[ease] text-right px-0 py-[5px] after:absolute after:w-0 after:h-0.5 after:bg-white after:transition-[width] after:duration-[0.3s] after:ease-[ease-in-out] after:left-0 after:-bottom-[-3px] hover:after:w-full" asp-controller="Auth" asp-action="Logout">Logout</a>
+        </li>
+    }
+    else
+    {
+        <li class="flex items-center">
+            <a class="flex items-center no-underline text-white text-base font-normal transition-[color] duration-[0.3s] ease-[ease] relative after:absolute after:w-0 after:h-0.5 after:bg-white after:transition-[width] after:duration-[0.3s] after:ease-[ease-in-out] after:left-0 after:-bottom-[-3px] hover:after:w-full" asp-controller="Auth" asp-action="Login">
+                <ion-icon size="large" style="color: white" name="logo-steam" class="mr-2"></ion-icon>
+                <span>Login via Steam</span>
+            </a>
+        </li>
+    }
+</ul>

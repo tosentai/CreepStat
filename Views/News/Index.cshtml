@@ -1,0 +1,158 @@
+﻿@using CreepStat.Helpers
+@model IEnumerable<CreepStat.Models.News>
+
+@{
+    ViewData["Title"] = "News";
+    bool isAdmin = User.IsInRole("Admin");
+}
+
+<div class="max-w-5xl mx-auto mt-10 p-5 bg-[#1E1E1E] shadow-lg rounded-lg">
+    <h1 class="text-5xl font-bold text-center text-white mb-6">News</h1>
+
+    @if (isAdmin)
+    {
+        <div class="flex justify-center">
+            <a asp-action="Create" class="bg-transparent text-white px-4 py-2 rounded border text-xl hover:bg-[#64C8FA] transition duration-300">
+                Add news
+            </a>
+        </div>
+    }
+
+    <div class="mt-6 space-y-6">
+        @foreach (var item in Model)
+        {
+            <div class="bg-[#2C2C2C] shadow-md rounded-lg p-6 border border-[#333333] mt-2">
+                <h2 class="text-2xl font-semibold text-white">@item.Title</h2>
+                <p class="text-[#B0B0B0] mt-2">Posted: @item.PublishedAt.ToShortDateString()</p>
+
+                <div class="text-[#E0E0E0] mt-2 markdown-content">
+                    @if (item.Content.Length > 700)
+                    {
+                        @Html.Raw(MarkdownHelper.MarkdownToHtml(item.Content.Substring(0, 700)))
+                        <span class="text-[#B0B0B0]">...</span>
+                    }
+                    else
+                    {
+                        @Html.Raw(MarkdownHelper.MarkdownToHtml(item.Content))
+                    }
+                </div>
+
+                <div class="mt-4 flex space-x-4">
+                    <a asp-action="Details" asp-route-id="@item.Id" class="bg-transparent text-white px-4 py-2 rounded border text-base hover:bg-[#64C8FA] transition duration-300">
+                        Read more
+                    </a>
+
+                    @if (isAdmin)
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="bg-transparent text-white px-4 py-2 rounded border text-base hover:bg-[#64C8FA] transition duration-300">
+                            Edit
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="bg-transparent text-white px-4 py-2 rounded border text-base hover:bg-[#FF5252] transition duration-300">
+                            Delete
+                        </a>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+<style>
+    .markdown-content h1 {
+        font-size: 2.25rem; /* text-4xl */
+        font-weight: 700; /* font-bold */
+        margin-top: 1rem; /* mt-4 */
+    }
+    .markdown-content h2 {
+        font-size: 1.875rem; /* text-3xl */
+        font-weight: 600; /* font-semibold */
+        margin-top: 1rem; /* mt-4 */
+    }
+    .markdown-content h3 {
+        font-size: 1.5rem; /* text-2xl */
+        font-weight: 500; /* font-medium */
+        margin-top: 1rem; /* mt-4 */
+    }
+    .markdown-content h4 {
+        font-size: 1.25rem; /* text-xl */
+        font-weight: 500; /* font-medium */
+        margin-top: 1rem; /* mt-4 */
+    }
+    .markdown-content h5 {
+        font-size: 1.125rem; /* text-lg */
+        font-weight: 500; /* font-medium */
+        margin-top: 1rem; /* mt-4 */
+    }
+    .markdown-content h6 {
+        font-size: 1rem; /* text-base */
+        font-weight: 500; /* font-medium */
+        margin-top: 1rem; /* mt-4 */
+    }
+    .markdown-content ul {
+        list-style-type: disc; /* list-disc */
+        padding-left: 1.5rem; /* list-inside */
+        margin-top: 1rem; /* mt-4 */
+    }
+    .markdown-content ol {
+        list-style-type: decimal; /* list-decimal */
+        padding-left: 1.5rem; /* list-inside */
+        margin-top: 1rem; /* mt-4 */
+    }
+    .markdown-content li {
+        margin-left: 1rem; /* ml-4 */
+    }
+    .markdown-content a {
+        color: #3b82f6; /* text-blue-500 */
+        text-decoration: underline; /* hover:underline */
+    }
+    .markdown-content a:hover {
+        text-decoration: underline; /* hover:underline */
+    }
+    .markdown-content img {
+        border-radius: 0.375rem; /* rounded-md */
+        margin-top: 1rem; /* mt-4 */
+    }
+    .markdown-content pre {
+        background-color: #1f2937; /* bg-gray-800 */
+        padding: 1rem; /* p-4 */
+        border-radius: 0.375rem; /* rounded-md */
+        margin-top: 1rem; /* mt-4 */
+    }
+    .markdown-content code {
+        color: #d1d5db; /* text-gray-200 */
+    }
+    .markdown-content blockquote {
+        border-left: 0.25rem solid #d1d5db; /* border-l-4 border-gray-300 */
+        padding-left: 1rem; /* pl-4 */
+        margin-top: 1rem; /* mt-4 */
+        font-style: italic; /* italic */
+        color: #4b5563; /* text-gray-600 */
+    }
+    .markdown-content table {
+        width: 100%; /* min-w-full */
+        background-color: #ffffff; /* bg-white */
+        border: 1px solid #d1d5db; /* border border-gray-300 */
+        margin-top: 1rem; /* mt-4 */
+    }
+    .markdown-content th, .markdown-content td {
+        padding: 0.5rem 1rem; /* py-2 px-4 */
+        border-bottom: 1px solid #d1d5db; /* border-b */
+    }
+    .markdown-content hr {
+        border-top: 1px solid #d1d5db; /* border-t border-gray-300 */
+        margin: 1rem 0; /* my-4 */
+    }
+    .markdown-content em {
+        font-style: italic; /* italic */
+    }
+    .markdown-content strong {
+        font-weight: 700; /* font-bold */
+    }
+    .markdown-content code {
+        background-color: #f3f4f6; /* bg-gray-100 */
+        padding: 0.25rem; /* p-1 */
+        border-radius: 0.25rem; /* rounded */
+        color: #1f2937; /* text-gray-800 */
+    }
+</style>
